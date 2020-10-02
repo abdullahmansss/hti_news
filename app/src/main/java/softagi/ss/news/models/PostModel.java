@@ -13,6 +13,10 @@ public class PostModel
         this.body = body;
     }
 
+    public PostModel(String title) {
+        this.title = title;
+    }
+
     public int getUserId() {
         return userId;
     }

@@ -62,4 +62,14 @@ public class RetrofitClient
     {
         return retrofitHelper.insertPostMulti(id, title, body);
     }
+
+    public Call<PostModel> putPost(String id, PostModel postModel)
+    {
+        return retrofitHelper.putPost(id, postModel);
+    }
+
+    public Call<PostModel> patchPost(String id, PostModel postModel)
+    {
+        return retrofitHelper.patchPost(id, postModel);
+    }
 }

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "515358147376",
+    "firebase_url": "https://hti-android-64380.firebaseio.com",
+    "project_id": "hti-android-64380",
+    "storage_bucket": "hti-android-64380.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515358147376:android:0f8153c69f88e6df2dbef5",
+        "android_client_info": {
+          "package_name": "softagi.ss.news"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "515358147376-lo2dajsme59tqhne5ulof65b14b1fv7e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "softagi.ss.news",
+            "certificate_hash": "96c598380d7aae808899d6dd072b07d5601b6656"
+          }
+        },
+        {
+          "client_id": "515358147376-n7c6a42q2sb0bkudp8uepafko0b80qoa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgWkMtrrCL0ao-7WA5V3ggPPoZf90cmew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "515358147376-n7c6a42q2sb0bkudp8uepafko0b80qoa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

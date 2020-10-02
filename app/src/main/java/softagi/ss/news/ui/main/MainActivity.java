@@ -3,35 +3,34 @@ package softagi.ss.news.ui.main;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.squareup.picasso.Picasso;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.MultipartBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import softagi.ss.news.R;
-import softagi.ss.news.database.RetrofitClient;
-import softagi.ss.news.models.NewsModel;
-import softagi.ss.news.models.PostModel;
+import softagi.ss.news.models.UserModel;
+import softagi.ss.news.ui.authentication.Authentication;
+import softagi.ss.news.ui.chat.ChatActivity;
+import softagi.ss.news.ui.profile.ProfileActivity;
+import softagi.ss.news.utils.Constants;
 
 public class MainActivity extends AppCompatActivity
 {
     RecyclerView recyclerView;
     ProgressBar progressBar;
     FloatingActionButton floatingActionButton;
+    List<UserModel> userModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initViews()
     {
-        recyclerView = findViewById(R.id.news_recycler);
+        recyclerView = findViewById(R.id.users_recycler);
         progressBar = findViewById(R.id.progress_bar);
         floatingActionButton = findViewById(R.id.insert_fab);
 
@@ -52,103 +51,133 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                MultipartBody.Part id = MultipartBody.Part.createFormData("userId", "1");
-                MultipartBody.Part title = MultipartBody.Part.createFormData("title", "yyyyyy");
-                MultipartBody.Part body = MultipartBody.Part.createFormData("body", "body t");
-
-
-                Call<PostModel> call = RetrofitClient.getInstance().insertPostMulti(
-                        id,
-                        title,
-                        body
-                );
-
-                call.enqueue(new Callback<PostModel>() {
-                    @Override
-                    public void onResponse(Call<PostModel> call, Response<PostModel> response) {
-                        Toast.makeText(MainActivity.this, response.body().getTitle() + "\n" + response.body().getBody() + "\n" + response.body().getId(), Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call<PostModel> call, Throwable t) {
-
-                    }
-                });
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), Authentication.class));
+                finish();
+//                MultipartBody.Part id = MultipartBody.Part.createFormData("userId", "1");
+//                MultipartBody.Part title = MultipartBody.Part.createFormData("title", "yyyyyy");
+//                MultipartBody.Part body = MultipartBody.Part.createFormData("body", "body t");
+//
+//                Call<PostModel> call = RetrofitClient.getInstance().insertPostMulti(
+//                        id,
+//                        title,
+//                        body
+//                );
+//
+//                Call<PostModel> call3 = RetrofitClient.getInstance().putPost("1", new PostModel(""));
+//                Call<PostModel> call4 = RetrofitClient.getInstance().patchPost("1",new PostModel(""));
+//
+//                call.enqueue(new Callback<PostModel>() {
+//                    @Override
+//                    public void onResponse(Call<PostModel> call, Response<PostModel> response) {
+//                        Toast.makeText(MainActivity.this, response.body().getTitle() + "\n" + response.body().getBody() + "\n" + response.body().getId(), Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<PostModel> call, Throwable t) {
+//
+//                    }
+//                });
             }
         });
 
-        Call<List<PostModel>> call = RetrofitClient.getInstance().getPosts();
+//        Call<List<PostModel>> call = RetrofitClient.getInstance().getPosts();
+//
+//        call.enqueue(new Callback<List<PostModel>>() {
+//            @Override
+//            public void onResponse(Call<List<PostModel>> call, Response<List<PostModel>> response)
+//            {
+//                progressBar.setVisibility(View.GONE);
+//                recyclerView.setAdapter(new NewsAdapter(response.body()));
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<PostModel>> call, Throwable t)
+//            {
+//                progressBar.setVisibility(View.GONE);
+//                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+//            }
+//        });
 
-        call.enqueue(new Callback<List<PostModel>>() {
+        Constants.initRef().child("Users").addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onResponse(Call<List<PostModel>> call, Response<List<PostModel>> response)
+            public void onDataChange(@NonNull DataSnapshot snapshot)
             {
+                userModels.clear();
+
+                for (DataSnapshot e : snapshot.getChildren())
+                {
+                    UserModel u = e.getValue(UserModel.class);
+
+                    if(!u.getuId().equals(Constants.getUid(MainActivity.this)))
+                        userModels.add(u);
+                }
+
                 progressBar.setVisibility(View.GONE);
-                recyclerView.setAdapter(new NewsAdapter(response.body()));
+                recyclerView.setAdapter(new UsersAdapter(userModels));
             }
 
             @Override
-            public void onFailure(Call<List<PostModel>> call, Throwable t)
+            public void onCancelled(@NonNull DatabaseError error)
             {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
 
-    public class NewsAdapter extends RecyclerView.Adapter<NewsVH>
+    public class UsersAdapter extends RecyclerView.Adapter<UsersVH>
     {
-        List<PostModel> detailsList;
+        List<UserModel> userModels;
 
-        public NewsAdapter(List<PostModel> detailsList)
+        public UsersAdapter(List<UserModel> userModels)
         {
-            this.detailsList = detailsList;
+            this.userModels = userModels;
         }
 
         @NonNull
         @Override
-        public NewsVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+        public UsersVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
         {
-            View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.news_item, parent, false);
-            return new NewsVH(view);
+            View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.user_item, parent, false);
+            return new UsersVH(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull NewsVH holder, int position)
+        public void onBindViewHolder(@NonNull UsersVH holder, int position)
         {
-            PostModel m = detailsList.get(position);
+            final UserModel userModel = userModels.get(position);
 
-            //String image = m.getUrlToImage();
-            String title = m.getTitle();
-            String body = m.getBody();
+            holder.name.setText(userModel.getName());
+            holder.phone.setText(userModel.getPhone());
 
-            holder.title.setText(title);
-            holder.date.setText(body);
-
-//            Picasso
-//                    .get()
-//                    .load(image)
-//                    .into(holder.image);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                    intent.putExtra("user", userModel);
+                    startActivity(intent);
+                }
+            });
         }
 
         @Override
-        public int getItemCount() {
-            return detailsList.size();
+        public int getItemCount()
+        {
+            return userModels.size();
         }
     }
 
-    public class NewsVH extends RecyclerView.ViewHolder
+    public class UsersVH extends RecyclerView.ViewHolder
     {
-        //ImageView image;
-        TextView title,date;
+        TextView name,phone;
 
-        public NewsVH(@NonNull View itemView)
+        public UsersVH(@NonNull View itemView)
         {
             super(itemView);
 
-            //image = itemView.findViewById(R.id.news_image);
-            title = itemView.findViewById(R.id.news_title);
-            date = itemView.findViewById(R.id.news_date);
+            name = itemView.findViewById(R.id.name_text);
+            phone = itemView.findViewById(R.id.phone_text);
         }
     }
 }
