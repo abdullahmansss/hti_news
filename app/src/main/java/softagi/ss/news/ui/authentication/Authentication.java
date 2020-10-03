@@ -205,7 +205,7 @@ public class Authentication extends AppCompatActivity
 
     private void createUser(String name, String email, String phone, final String uid)
     {
-        UserModel userModel = new UserModel(uid, name, email, phone);
+        UserModel userModel = new UserModel(uid, name, email, phone, "");
         databaseReference.child("Users").child(uid).setValue(userModel).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task)

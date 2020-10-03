@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getApplicationContext(), Authentication.class));
-                finish();
+                //FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                //finish();
 //                MultipartBody.Part id = MultipartBody.Part.createFormData("userId", "1");
 //                MultipartBody.Part title = MultipartBody.Part.createFormData("title", "yyyyyy");
 //                MultipartBody.Part body = MultipartBody.Part.createFormData("body", "body t");

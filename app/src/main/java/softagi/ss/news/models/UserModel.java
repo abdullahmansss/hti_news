@@ -8,15 +8,25 @@ public class UserModel implements Serializable
     private String name;
     private String email;
     private String phone;
+    private String image;
 
-    public UserModel(String uId, String name, String email, String phone) {
+    public UserModel(String uId, String name, String email, String phone, String image) {
         this.uId = uId;
         this.name = name;
         this.email = email;
         this.phone = phone;
+        this.image = image;
     }
 
     public UserModel() {
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getuId() {
